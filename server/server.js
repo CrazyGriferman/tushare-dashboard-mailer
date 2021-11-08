@@ -2,8 +2,14 @@ const nodemailer = require("nodemailer");
 //var path = require("path");
 var express = require("express");
 //var webpack = require("webpack");server.js
+var bodyParser = require("body-parser");
+var router = express.Router();
 
 var app = express();
+
+app.use(bodyParser.json()); // support json encoded bodies
+app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
+app.use("/", router);
 
 // Use Smtp Protocol to send Email
 
@@ -22,8 +28,10 @@ app.listen(8085, function () {
 });
 
 app.post("/test", (req, res) => {
-  const data = req.body.data;
-
+  // const data = req.body.data;
+  console.log(req);
+  console.log(req.body);
+  const data = 1;
   let mailOptions = {
     from: "251031557@qq.com", // TODO: email sender
     to: "251031557@qq.com", // TODO: email receiver
