@@ -60,10 +60,9 @@ export default {
           this.chartSetting["stcokPrice"],
           this.chartSetting["xDate"]
         );
-
         this.isChartRender = true;
       });
-    await axios
+    axios
       .post("/api/test", {
         data: this.chartSetting["stcokPrice"],
       })
