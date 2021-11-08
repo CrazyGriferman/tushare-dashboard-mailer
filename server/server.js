@@ -1,35 +1,41 @@
 const nodemailer = require("nodemailer");
 //var path = require("path");
 var express = require("express");
-//var webpack = require("webpack");
-var bodyParser = require("body-parser");
+//var webpack = require("webpack");server.js
+
 var app = express();
-var apiRoutes = express.Router();
 
 // Use Smtp Protocol to send Email
 
+let transporter = nodemailer.createTransport({
+  service: "QQ",
+  auth: {
+    user: "251031557@qq.com", // TODO: your gmail account
+    pass: "domvadrtufwibhae", // TODO: your gmail password
+  },
+});
+
+// setup e-mail data with unicode symbols
+
 app.listen(8085, function () {
   console.info("复制打开浏览器", "localhost:8085");
+});
 
-  let transporter = nodemailer.createTransport({
-    service: "QQ",
-    auth: {
-      user: "251031557@qq.com", // TODO: your gmail account
-      pass: "domvadrtufwibhae", // TODO: your gmail password
-    },
-  });
+app.post("/test", (req, res) => {
+  const data = req.body.data;
 
-  // setup e-mail data with unicode symbols
   let mailOptions = {
     from: "251031557@qq.com", // TODO: email sender
     to: "251031557@qq.com", // TODO: email receiver
-    subject: "test",
+    subject: `上海机场数据`,
+    text: `${data}`,
   };
 
   transporter.sendMail(mailOptions, (err) => {
     if (err) {
       return console.log("Error occurs");
     }
+    res.send("mail send");
     return console.log("Email sent!!!");
   });
 });
