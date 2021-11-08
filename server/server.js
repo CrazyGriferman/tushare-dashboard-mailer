@@ -29,9 +29,7 @@ app.listen(8085, function () {
 
 app.post("/test", (req, res) => {
   // const data = req.body.data;
-  console.log(req);
-  console.log(req.body);
-  const data = 1;
+  const data = req.body.data;
   let mailOptions = {
     from: "251031557@qq.com", // TODO: email sender
     to: "251031557@qq.com", // TODO: email receiver
