@@ -9,6 +9,10 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "dns": "^0.2.2",
+    "echarts": "5.0.2",
+    "net": "^1.0.2",
+    "nodemailer": "^6.7.0",
     "vue": "^2.6.11",
     "vue-router": "^3.2.0"
   },
