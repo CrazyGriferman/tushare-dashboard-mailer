@@ -49,7 +49,6 @@ export default {
       })
       .then((res) => {
         this.data = res.data.data.items;
-        console.log(this.data);
         this.data.forEach((item) => {
           this.chartSetting["xDate"].push(item[0]);
           this.chartSetting["stcokPrice"].push(item[1]);
@@ -61,7 +60,15 @@ export default {
           this.chartSetting["stcokPrice"],
           this.chartSetting["xDate"]
         );
+
         this.isChartRender = true;
+      });
+    await axios
+      .post("/api/test", {
+        data: this.chartSetting["stcokPrice"],
+      })
+      .then(() => {
+        console.log(1);
       });
   },
   methods: {
