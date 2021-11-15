@@ -21,7 +21,7 @@ export default {
 <template>
   <base-container
     id="stationChart"
-    ititle="上海机场日线 20200916-20211102"
+    ititle="上海机场日线 20200916-20211110"
     iwidth="80"
     iheight="70"
     hasLink="no"
