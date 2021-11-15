@@ -4,7 +4,7 @@ import BaseContainer from "../features/BaseContainer.vue";
 export default {
   name: "CityTheChart",
   components: { BaseContainer },
-  props: ["chartOption"],
+  props: ["chartOption", "postData"],
   mounted() {
     let Chart = echarts.init(document.getElementById("chart"));
     Chart.setOption(this.chartOption);
@@ -21,7 +21,7 @@ export default {
 <template>
   <base-container
     id="stationChart"
-    ititle="上海机场日线 20200916-20211110"
+    :ititle="`${this.postData.ts_code}日线 ${this.postData.start_date} 至 ${this.postData.end_date}`"
     iwidth="80"
     iheight="70"
     hasLink="no"
