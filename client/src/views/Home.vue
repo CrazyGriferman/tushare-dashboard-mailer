@@ -43,11 +43,7 @@ proxychains-ng 4.14
         股票查询窗口
       </head>
       <div class="stockName">
-        <input
-          type="text"
-          placeholder="请填入股票名称"
-          v-model="searchData.stockName"
-        />
+        <input type="text" placeholder="请填入股票名称" v-model="stockName" />
         <div class="suggestion">
           <ul>
             <li v-for="result in results" :key="result.id">
@@ -93,8 +89,8 @@ export default {
         stockPrice: "",
         key: "",
       },
+      stockName: "",
       searchData: {
-        stockName: "",
         stockNumber: "",
         startDate: "",
         endDate: "",
@@ -155,11 +151,10 @@ export default {
       immediate: true,
       deep: true,
     },
-    searchData: {
-      handler(newSearchData, oldSearchData) {
+    stockName: {
+      handler(newStockName, oldStockName) {
         this.search();
       },
-      deep: true,
     },
   },
   async created() {
@@ -172,14 +167,14 @@ export default {
 
   methods: {
     setResult(text) {
-      this.searchData.stockName = text;
+      this.stockName = text;
       this.results = [];
     },
     search() {
       this.results = [];
-      if (this.searchData.stockName) {
+      if (this.stockName) {
         this.stockMap.forEach((key, value) => {
-          if (value.indexOf(this.searchData.stockName) != -1) {
+          if (value.indexOf(this.stockName) != -1) {
             this.results.push(value);
           }
         });
@@ -195,7 +190,7 @@ export default {
       this.searchData.startDate = this.searchData.startDate.replace(/\-/g, "");
       this.searchData.endDate = this.searchData.endDate.replace(/\-/g, "");
       this.$refs.search_form.reset();
-      this.postData.ts_code = this.stockMap.get(this.searchData.stockName);
+      this.postData.ts_code = this.stockMap.get(this.stockName);
       this.postData.start_date = this.searchData.startDate;
       this.postData.end_date = this.searchData.endDate;
     },
