@@ -10,10 +10,10 @@ module.exports = {
           "^/api": "", // Replace the request address in the target, that is, you can write directly to / API when you request the address http://api.douban.com/v2/XXXXX in the future.
         },
       },
-      "/": {
+      /* "/": {
         target: "http://api.waditu.com",
         changeOrigin: true,
-      },
+      }, */
     },
   },
 };

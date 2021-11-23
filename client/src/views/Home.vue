@@ -20,9 +20,14 @@ proxychains-ng 4.14
         placeholder="请填入股票代码"
         v-model="subscriber.stockNumber"
       />
+      <div>
+        <ul>
+          <li v-for="result in results" :key="result.id">{{ result.label }}</li>
+        </ul>
+      </div>
       <input
         type="text"
-        placeholder="填入抄底价格"
+        placeholder="填入价格"
         v-model="subscriber.stockPrice"
       />
       <input
@@ -44,8 +49,8 @@ proxychains-ng 4.14
       </head>
       <input
         type="text"
-        placeholder="请填入股票代码"
-        v-model="searchData.stockNumber"
+        placeholder="请填入股票名称"
+        v-model="searchData.stockName"
       />
       <input
         type="date"
@@ -59,6 +64,7 @@ proxychains-ng 4.14
 </template>
 
 <script>
+import stockData from "../assets/data.json";
 import axios from "axios";
 import { getChartOption } from "../utils/GetChartOption";
 import CityTheChart from "../components/CityTheChart";
@@ -73,12 +79,17 @@ export default {
   },
   data() {
     return {
+      stockRawData: stockData.items,
+      searchString: "",
+      results: [],
+      stockMap: "",
       subscriber: {
         stockNumber: "",
         stockPrice: "",
         key: "",
       },
       searchData: {
+        stockName: "",
         stockNumber: "",
         startDate: "",
         endDate: "",
@@ -103,7 +114,7 @@ export default {
       handler(newPostData, oldPostData) {
         this.isChartRender = false;
         axios
-          .post("/", {
+          .post("http://localhost:8086/http://api.waditu.com/", {
             api_name: "daily",
             token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
             params: {
@@ -130,14 +141,49 @@ export default {
             );
             this.isChartRender = true;
           });
+        axios
+          .post("/api/test", {
+            data: this.chartSetting["stcokPrice"],
+          })
+          .then(() => {});
       },
       immediate: true,
       deep: true,
     },
+    searchData: {
+      handler(newSearchData, oldSearchData) {
+        console.log(21);
+        this.search();
+      },
+      deep: true,
+    },
   },
-  async created() {},
+  async created() {
+    let stockMap = new Map();
+    this.stockRawData.forEach((item) => {
+      stockMap.set(item[1], item[0]);
+    });
+    this.stockMap = stockMap;
+  },
 
   methods: {
+    debounce(func, wait) {
+      let timer;
+      return () => {
+        clearTimeout(timer);
+        timer = setTimeout(func, wait);
+      };
+    },
+    search() {
+      console.log(this.searchData.stockName);
+
+      this.stockMap.forEach((key, value) => {
+        let reg = RegExp(`/${value}/`);
+        if (this.searchData.stockName.test(reg)) {
+          console.log(value);
+        }
+      });
+    },
     changeInfo() {
       console.log(1);
     },
@@ -148,7 +194,7 @@ export default {
       this.searchData.startDate = this.searchData.startDate.replace(/\-/g, "");
       this.searchData.endDate = this.searchData.endDate.replace(/\-/g, "");
       this.$refs.search_form.reset();
-      this.postData.ts_code = this.searchData.stockNumber;
+      this.postData.ts_code = this.stockMap.get(this.searchData.stockName);
       this.postData.start_date = this.searchData.startDate;
       this.postData.end_date = this.searchData.endDate;
     },
