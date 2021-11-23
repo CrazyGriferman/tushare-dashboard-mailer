@@ -20,11 +20,6 @@ proxychains-ng 4.14
         placeholder="请填入股票代码"
         v-model="subscriber.stockNumber"
       />
-      <div>
-        <ul>
-          <li v-for="result in results" :key="result.id">{{ result.label }}</li>
-        </ul>
-      </div>
       <input
         type="text"
         placeholder="填入价格"
@@ -47,11 +42,21 @@ proxychains-ng 4.14
       <head>
         股票查询窗口
       </head>
-      <input
-        type="text"
-        placeholder="请填入股票名称"
-        v-model="searchData.stockName"
-      />
+      <div class="stockName">
+        <input
+          type="text"
+          placeholder="请填入股票名称"
+          v-model="searchData.stockName"
+        />
+        <div class="suggestion">
+          <ul>
+            <li v-for="result in results" :key="result.id">
+              <a href="#" @click="setResult(result)">{{ result }}</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
       <input
         type="date"
         placeholder="起始日期"
@@ -152,7 +157,6 @@ export default {
     },
     searchData: {
       handler(newSearchData, oldSearchData) {
-        console.log(21);
         this.search();
       },
       deep: true,
@@ -167,22 +171,19 @@ export default {
   },
 
   methods: {
-    debounce(func, wait) {
-      let timer;
-      return () => {
-        clearTimeout(timer);
-        timer = setTimeout(func, wait);
-      };
+    setResult(text) {
+      this.searchData.stockName = text;
+      this.results = [];
     },
     search() {
-      console.log(this.searchData.stockName);
-
-      this.stockMap.forEach((key, value) => {
-        let reg = RegExp(`/${value}/`);
-        if (this.searchData.stockName.test(reg)) {
-          console.log(value);
-        }
-      });
+      this.results = [];
+      if (this.searchData.stockName) {
+        this.stockMap.forEach((key, value) => {
+          if (value.indexOf(this.searchData.stockName) != -1) {
+            this.results.push(value);
+          }
+        });
+      }
     },
     changeInfo() {
       console.log(1);
@@ -271,5 +272,35 @@ export default {
   height: 2em;
   font-size: 24px;
   color: #a4c338;
+}
+
+.stockName {
+  position: relative;
+}
+
+.suggestion {
+  margin: 0;
+  color: red;
+}
+
+.suggestion ul {
+  position: absolute;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  color: red;
+}
+
+.suggestion li {
+  list-style: none;
+}
+
+.suggestion li a {
+  font-size: 24px;
+  display: block;
+  opacity: 0.9;
+  text-decoration: none;
+  color: #a4c338;
+  background-color: #fff;
 }
 </style>
