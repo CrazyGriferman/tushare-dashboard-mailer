@@ -7,6 +7,7 @@ proxychains-ng 4.14
       v-if="isChartRender"
       :chartOption="chartOption"
       :postData="postData"
+      :chartTitleName="chartTitleName"
     />
     <form
       ref="subscribe_form"
@@ -84,6 +85,7 @@ export default {
       searchString: "",
       results: [],
       stockMap: "",
+      chartTitleName: "上海机场",
       subscriber: {
         stockNumber: "",
         stockPrice: "",
@@ -187,6 +189,7 @@ export default {
       this.$refs.subscribe_form.reset();
     },
     searchSubmit() {
+      this.chartTitleName = this.stockName;
       this.searchData.startDate = this.searchData.startDate.replace(/\-/g, "");
       this.searchData.endDate = this.searchData.endDate.replace(/\-/g, "");
       this.$refs.search_form.reset();
