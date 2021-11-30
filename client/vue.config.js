@@ -2,7 +2,7 @@ module.exports = {
   // devtool: 'none',
   devServer: {
     proxy: {
-      "/test": {
+      "  test": {
         target: "http://localhost:8085", //the third-party interface you requested
         changeOrigin: true, // A virtual server is created locally, then the requested data is sent, and the requested data is received at the same time, so there are no cross-domain issues with data interaction between the server and the server
         pathRewrite: {

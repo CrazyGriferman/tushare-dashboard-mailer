@@ -165,12 +165,46 @@ export default {
       stockMap.set(item[1], item[0]);
     });
     this.stockMap = stockMap;
+    console.log(1);
+    let date = new Date();
+    console.log(this.dateFormat(new Date()));
   },
 
   methods: {
     setResult(text) {
       this.stockName = text;
       this.results = [];
+    },
+    dateFormat(time) {
+      var date = new Date(time);
+      var year = date.getFullYear();
+      /* 在日期格式中，月份是从0开始的，因此要加0
+       * 使用三元表达式在小于10的前面加0，以达到格式统一  如 09:11:05
+       * */
+      var month =
+        date.getMonth() + 1 < 10
+          ? "0" + (date.getMonth() + 1)
+          : date.getMonth() + 1;
+      var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
+      // 拼接
+      return year + "" + month + "" + day;
+    },
+    getCurrentStockPrice() {
+      axios
+        .post("http://localhost:8086/http://api.waditu.com/", {
+          api_name: "daily",
+          token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
+          params: {
+            ts_code: "600009.SH",
+          },
+          fields: "trade_date,close",
+        })
+        .then((res) => {
+          this.searchData.startDate = this.searchData.startDate.replace(
+            /\-/g,
+            ""
+          );
+        });
     },
     search() {
       this.results = [];
