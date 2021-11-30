@@ -62,6 +62,14 @@ app.post("/test", (req, res) => {
   });
 });
 
+const timeFunc = setInterval(() => {
+  let date = new Date();
+  let h = date.getHours();
+  if (h == 12) {
+    sendEmail();
+  }
+}, 60000);
+
 /* // Step 1
 let transporter = nodemailer.createTransport({
         service: "QQ",
