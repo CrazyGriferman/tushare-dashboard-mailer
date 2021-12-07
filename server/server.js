@@ -22,27 +22,6 @@ function jsonReader(filePath, cb) {
   });
 }
 
-jsonReader("./stock.json", (err, customer) => {
-  if (err) {
-    console.log(err);
-    return;
-  }
-  //console.log(customer); // => "Infinity Loop Drive"
-
-  customer.map((item) => {
-    console.log(item);
-  });
-
-  customer.push({
-    stockNumber: "600010.SH",
-    stockName: "test",
-    stockPrice: "44",
-  });
-  /* fs.writeFile("./stock.json", JSON.stringify(customer), (err) => {
-    if (err) console.log("Error writing file:", err);
-  }); */
-});
-
 const app = express();
 
 app.use(bodyParser.json()); // support json encoded bodies
@@ -84,6 +63,7 @@ app.listen(8085, function () {
 app.post("/test", (req, res) => {
   // const data = req.body.data;
   const data = req.body.data;
+
   let mailOptions = {
     from: "251031557@qq.com", // TODO: email sender
     to: "251031557@qq.com", // TODO: email receiver
@@ -97,6 +77,35 @@ app.post("/test", (req, res) => {
     }
     res.send("mail send");
     return console.log("Email sent!!!");
+  });
+});
+
+app.get("/subscription", (req, res) => {
+  jsonReader("./stock.json", (err, customer) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    res.send(customer);
+  });
+});
+
+app.post("/add", (req, res) => {
+  const data = req.body.data;
+  console.log(data);
+
+  jsonReader("./stock.json", (err, subscriptionInfo) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    subscriptionInfo.map((item) => {
+      console.log(item);
+    });
+    subscriptionInfo.push(data);
+    fs.writeFile("./stock.json", JSON.stringify(subscriptionInfo), (err) => {
+      if (err) console.log("Error writing file:", err);
+    });
   });
 });
 

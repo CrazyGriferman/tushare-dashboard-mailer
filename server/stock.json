@@ -1,5 +1,1 @@
-[
-  { "stockNumber": "600009.SH", "stockName": "上海机场", "stockPrice": "44" },
-  { "stockNumber": "600010.SH", "stockName": "包钢股份", "stockPrice": "44" },
-  { "stockNumber": "600010.SH", "stockName": "test", "stockPrice": "44" }
-]
+[{"stockNumber":"600009.SH","stockName":"上海机场","stockPrice":"44"},{"stockNumber":"600010.SH","stockName":"包钢股份","stockPrice":"44"},{"stockNumber":"600010.SH","stockName":"test543543","stockPrice":"44543543"},{"stockNumber":"600009.SH","stockName":"上海机场","stockPrice":"647"},{"stockNumber":"600009.SH","stockName":"上海机场","stockPrice":"76587"},{"stockNumber":"002352.SZ","stockName":"顺丰控股","stockPrice":"76588"},{"stockNumber":"600019.SH","stockName":"宝钢股份","stockPrice":"67577"},{"stockNumber":"002352.SZ","stockName":"顺丰控股","stockPrice":"6757776"},{"stockNumber":"002352.SZ","stockName":"顺丰控股","stockPrice":"56346"},{"stockNumber":"600009.SH","stockName":"上海机场","stockPrice":"7657"},{"stockNumber":"600019.SH","stockName":"宝钢股份","stockPrice":"6547"}]
