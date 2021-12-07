@@ -1,20 +1,58 @@
 const nodemailer = require("nodemailer");
 //var path = require("path");
-var express = require("express");
+let express = require("express");
 //var webpack = require("webpack");server.js
-var bodyParser = require("body-parser");
-var router = express.Router();
+const bodyParser = require("body-parser");
+const router = express.Router();
 
-var app = express();
+// file module
+const fs = require("fs");
+
+function jsonReader(filePath, cb) {
+  fs.readFile(filePath, (err, fileData) => {
+    if (err) {
+      return cb && cb(err);
+    }
+    try {
+      const object = JSON.parse(fileData);
+      return cb && cb(null, object);
+    } catch (err) {
+      return cb && cb(err);
+    }
+  });
+}
+
+jsonReader("./stock.json", (err, customer) => {
+  if (err) {
+    console.log(err);
+    return;
+  }
+  //console.log(customer); // => "Infinity Loop Drive"
+
+  customer.map((item) => {
+    console.log(item);
+  });
+
+  customer.push({
+    stockNumber: "600010.SH",
+    stockName: "test",
+    stockPrice: "44",
+  });
+  /* fs.writeFile("./stock.json", JSON.stringify(customer), (err) => {
+    if (err) console.log("Error writing file:", err);
+  }); */
+});
+
+const app = express();
 
 app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
 app.use("/", router);
 
 // Listen on a specific host via the HOST environment variable
-var host = process.env.HOST || "localhost";
+const host = process.env.HOST || "localhost";
 // Listen on a specific port via the PORT environment variable
-var port = process.env.PORT || 8086;
+const port = process.env.PORT || 8086;
 
 var cors_proxy = require("cors-anywhere");
 cors_proxy
@@ -33,7 +71,7 @@ let transporter = nodemailer.createTransport({
   service: "QQ",
   auth: {
     user: "251031557@qq.com", // TODO: your gmail account
-    pass: "domvadrtufwibhae", // TODO: your gmail password
+    pass: "ycyucbxqdxnwcbah", // TODO: your gmail password
   },
 });
 
@@ -55,7 +93,7 @@ app.post("/test", (req, res) => {
 
   transporter.sendMail(mailOptions, (err) => {
     if (err) {
-      return console.log("Error occurs");
+      return console.log(err);
     }
     res.send("mail send");
     return console.log("Email sent!!!");
