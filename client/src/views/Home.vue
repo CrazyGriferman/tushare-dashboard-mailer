@@ -13,14 +13,15 @@ proxychains-ng 4.14
       ref="subscribe_form"
       id="subscribe"
       method="post"
-      @submit.prevent="subscribeSubmit"
+      @submit.prevent=""
       action=""
     >
       <input
         type="text"
-        placeholder="请填入股票代码"
-        v-model="subscriber.stockNumber"
+        placeholder="请填入股票名称"
+        v-model="subscriber.stockName"
       />
+
       <input
         type="text"
         placeholder="填入价格"
@@ -28,15 +29,16 @@ proxychains-ng 4.14
       />
       <input
         type="text"
-        placeholder="请填入订阅密钥"
-        v-model="subscriber.key"
+        placeholder="请填入订阅邮箱"
+        v-model="subscriber.mail"
       />
-      <button type="submit">订阅</button>
+      <button type="submit" @click="subscribeSubmit('subscribe')">订阅</button>
+      <button type="submit" @click="subscribeSubmit('delete')">删除</button>
     </form>
 
     <form
       id="search"
-      @submit.prevent="searchSubmit"
+      @submit.prevent="searchSubmit(searchStockName)"
       method="post"
       ref="search_form"
     >
@@ -44,7 +46,11 @@ proxychains-ng 4.14
         股票查询窗口
       </head>
       <div class="stockName">
-        <input type="text" placeholder="请填入股票名称" v-model="stockName" />
+        <input
+          type="text"
+          placeholder="请填入股票名称"
+          v-model="searchStockName"
+        />
         <div class="suggestion">
           <ul>
             <li v-for="result in results" :key="result.id">
@@ -88,10 +94,11 @@ export default {
       chartTitleName: "上海机场",
       subscriber: {
         stockNumber: "",
+        stockName: "",
         stockPrice: "",
-        key: "",
+        mail: "",
       },
-      stockName: "",
+      searchStockName: "",
       searchData: {
         stockNumber: "",
         startDate: "",
@@ -100,7 +107,7 @@ export default {
       data: [],
       isChartRender: false,
       chartSetting: {
-        stcokPrice: [],
+        stockPrice: [],
         xDate: [],
       },
       chartOption: [],
@@ -130,32 +137,35 @@ export default {
           .then((res) => {
             this.data = res.data.data.items;
             this.chartSetting["xDate"] = [];
-            this.chartSetting["stcokPrice"] = [];
+            this.chartSetting["stockPrice"] = [];
             this.data.forEach((item) => {
               this.chartSetting["xDate"].push(item[0]);
-              this.chartSetting["stcokPrice"].push(item[1]);
+              this.chartSetting["stockPrice"].push(item[1]);
             });
-            this.chartSetting["stcokPrice"] =
-              this.chartSetting["stcokPrice"].reverse();
+            this.chartSetting["stockPrice"] =
+              this.chartSetting["stockPrice"].reverse();
             this.chartSetting["xDate"] = this.chartSetting["xDate"].reverse();
             this.chartOption = getChartOption(
-              this.chartSetting["stcokPrice"],
+              this.chartSetting["stockPrice"],
               this.chartSetting["xDate"]
             );
             this.isChartRender = true;
           });
         axios
-          .post("/api/test", {
-            data: this.chartSetting["stcokPrice"],
+          .post("http://localhost:8086/http://localhost:8085/test", {
+            data: this.chartSetting["stockPrice"],
           })
           .then(() => {});
+        axios
+          .get("http://localhost:8086/http://localhost:8085/subscription")
+          .then((res) => {});
       },
       immediate: true,
       deep: true,
     },
-    stockName: {
-      handler(newStockName, oldStockName) {
-        this.search();
+    searchStockName: {
+      handler(newSearchStockName, oldSearchStockName) {
+        this.search(newSearchStockName, this.results);
       },
     },
   },
@@ -166,14 +176,11 @@ export default {
     });
     this.stockMap = stockMap;
     let date = this.dateFormat(new Date());
-    this.getCurrentStockPrice(date);
+    /* for sending email */
+    //this.getCurrentStockPrice(date);
   },
 
   methods: {
-    setResult(text) {
-      this.stockName = text;
-      this.results = [];
-    },
     dateFormat(time) {
       var date = new Date(time);
       var year = date.getFullYear();
@@ -201,18 +208,21 @@ export default {
           let sendText = `目前股价已小于您设定的价格45，为${price}`;
           if (price <= "45") {
             axios
-              .post("/api/test", {
+              .post("/test", {
                 data: sendText,
               })
               .then(() => {});
           }
         });
     },
-    search() {
+    setResult(text) {
+      this.searchStockName = text;
       this.results = [];
-      if (this.stockName) {
+    },
+    search(stockName) {
+      if (stockName) {
         this.stockMap.forEach((key, value) => {
-          if (value.indexOf(this.stockName) != -1) {
+          if (value.indexOf(stockName) != -1) {
             this.results.push(value);
           }
         });
@@ -221,15 +231,41 @@ export default {
     changeInfo() {
       console.log(1);
     },
-    subscribeSubmit() {
+    subscribeSubmit(choice) {
       this.$refs.subscribe_form.reset();
+      if (choice == "subscribe") {
+        axios
+          .post("http://localhost:8086/http://localhost:8085/add", {
+            data: {
+              stockNumber: this.stockMap.get(this.subscriber.stockName),
+              stockName: this.subscriber.stockName,
+              stockPrice: this.subscriber.stockPrice,
+              mail: this.subscriber.mail,
+            },
+          })
+          .then((res) => {});
+        this.subscriber.stockNumber = "";
+        this.subscriber.stockName = "";
+        this.subscriber.stockPrice = "";
+        this.subscriber.mail = "";
+      } else if (choice == "delete") {
+        axios
+          .post("http://localhost:8086/http://localhost:8085/delete", {
+            data: {
+              stockName: this.subscriber.stockName,
+              stockPrice: undefined ? null : this.subscriber.stockPrice,
+              mail: this.subscriber.mail,
+            },
+          })
+          .then((res) => {});
+      }
     },
-    searchSubmit() {
-      this.chartTitleName = this.stockName;
+    searchSubmit(stockName) {
+      this.chartTitleName = stockName;
       this.searchData.startDate = this.searchData.startDate.replace(/\-/g, "");
       this.searchData.endDate = this.searchData.endDate.replace(/\-/g, "");
       this.$refs.search_form.reset();
-      this.postData.ts_code = this.stockMap.get(this.stockName);
+      this.postData.ts_code = this.stockMap.get(stockName);
       this.postData.start_date = this.searchData.startDate;
       this.postData.end_date = this.searchData.endDate;
     },
