@@ -151,14 +151,6 @@ export default {
             );
             this.isChartRender = true;
           });
-        axios
-          .post("http://localhost:8086/http://localhost:8085/test", {
-            data: this.chartSetting["stockPrice"],
-          })
-          .then(() => {});
-        axios
-          .get("http://localhost:8086/http://localhost:8085/subscription")
-          .then((res) => {});
       },
       immediate: true,
       deep: true,
@@ -178,6 +170,16 @@ export default {
     let date = this.dateFormat(new Date());
     /* for sending email */
     //this.getCurrentStockPrice(date);
+    // send data to each mail of their subscribe info
+    axios
+      .get("http://localhost:8086/http://localhost:8085/subscription")
+      .then((res) => {
+        const subscribeInfo = res.data;
+        console.log(subscribeInfo);
+        subscribeInfo.forEach((item) => {
+          this.sendCurrentStockPrice(item);
+        });
+      });
   },
 
   methods: {
@@ -192,24 +194,27 @@ export default {
       // 拼接
       return year + "" + month + "" + day;
     },
-    getCurrentStockPrice(time) {
+    sendCurrentStockPrice(subscribeInfo) {
       axios
         .post("http://localhost:8086/http://api.waditu.com/", {
           api_name: "daily",
           token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
           params: {
-            ts_code: "600009.SH",
-            trade_date: time,
+            ts_code: subscribeInfo.stockNumber,
+            trade_date: this.dateFormat(new Date()),
           },
           fields: "close",
         })
         .then((res) => {
           let price = res.data.data.items;
-          let sendText = `目前股价已小于您设定的价格45，为${price}`;
-          if (price <= "45") {
+          let sendText = `目前股价已小于您设定的价格${subscribeInfo.stockPrice}，为${price}`;
+          if (price < subscribeInfo.stockPrice) {
             axios
-              .post("/test", {
-                data: sendText,
+              .post("http://localhost:8086/http://localhost:8085/post", {
+                data: {
+                  sendText: sendText,
+                  mail: subscribeInfo.mail,
+                },
               })
               .then(() => {});
           }
