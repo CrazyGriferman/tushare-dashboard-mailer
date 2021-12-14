@@ -76,6 +76,7 @@ import stockData from "../assets/data.json";
 import axios from "axios";
 import { getChartOption } from "../utils/GetChartOption";
 import CityTheChart from "../components/CityTheChart";
+import baseUrl from "../api/baseUrl";
 
 export default {
   name: "Home",
@@ -124,7 +125,7 @@ export default {
       handler(newPostData, oldPostData) {
         this.isChartRender = false;
         axios
-          .post("http://localhost:8086/http://api.waditu.com/", {
+          .post("/http://api.waditu.com/", {
             api_name: "daily",
             token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
             params: {
@@ -158,6 +159,7 @@ export default {
     searchStockName: {
       handler(newSearchStockName, oldSearchStockName) {
         this.search(newSearchStockName, this.results);
+        console.log(1);
       },
     },
   },
@@ -171,15 +173,13 @@ export default {
     /* for sending email */
     //this.getCurrentStockPrice(date);
     // send data to each mail of their subscribe info
-    axios
-      .get("http://localhost:8086/http://localhost:8085/subscription")
-      .then((res) => {
-        const subscribeInfo = res.data;
-        console.log(subscribeInfo);
-        subscribeInfo.forEach((item) => {
-          this.sendCurrentStockPrice(item);
-        });
+    axios.get(`${baseUrl}/subscription`).then((res) => {
+      const subscribeInfo = res.data;
+      subscribeInfo.forEach((item) => {
+        this.sendCurrentStockPrice(item);
       });
+    });
+    console.log(process.env.NODE_ENV);
   },
 
   methods: {
@@ -196,7 +196,7 @@ export default {
     },
     sendCurrentStockPrice(subscribeInfo) {
       axios
-        .post("http://localhost:8086/http://api.waditu.com/", {
+        .post("/http://api.waditu.com/", {
           api_name: "daily",
           token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
           params: {
@@ -210,7 +210,7 @@ export default {
           let sendText = `目前股价已小于您设定的价格${subscribeInfo.stockPrice}，为${price}`;
           if (price < subscribeInfo.stockPrice) {
             axios
-              .post("http://localhost:8086/http://localhost:8085/post", {
+              .post(`${baseUrl}/post`, {
                 data: {
                   sendText: sendText,
                   mail: subscribeInfo.mail,
@@ -225,6 +225,7 @@ export default {
       this.results = [];
     },
     search(stockName) {
+      this.results = [];
       if (stockName) {
         this.stockMap.forEach((key, value) => {
           if (value.indexOf(stockName) != -1) {
@@ -240,7 +241,7 @@ export default {
       this.$refs.subscribe_form.reset();
       if (choice == "subscribe") {
         axios
-          .post("http://localhost:8086/http://localhost:8085/add", {
+          .post(`${baseUrl}/add`, {
             data: {
               stockNumber: this.stockMap.get(this.subscriber.stockName),
               stockName: this.subscriber.stockName,
@@ -255,7 +256,7 @@ export default {
         this.subscriber.mail = "";
       } else if (choice == "delete") {
         axios
-          .post("http://localhost:8086/http://localhost:8085/delete", {
+          .post(`${baseUrl}/delete`, {
             data: {
               stockName: this.subscriber.stockName,
               stockPrice: undefined ? null : this.subscriber.stockPrice,
