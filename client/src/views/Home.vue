@@ -72,11 +72,11 @@ proxychains-ng 4.14
 </template>
 
 <script>
-import stockData from "../assets/data.json";
 import axios from "axios";
 import { getChartOption } from "../utils/GetChartOption";
 import CityTheChart from "../components/CityTheChart";
 import baseUrl from "../api/baseUrl";
+import corsUrl from "../api/corsUrl";
 
 export default {
   name: "Home",
@@ -88,7 +88,7 @@ export default {
   },
   data() {
     return {
-      stockRawData: stockData.items,
+      stockRawData: "",
       searchString: "",
       results: [],
       stockMap: "",
@@ -125,7 +125,7 @@ export default {
       handler(newPostData, oldPostData) {
         this.isChartRender = false;
         axios
-          .post("/http://api.waditu.com/", {
+          .post(`${corsUrl}/http://api.waditu.com/`, {
             api_name: "daily",
             token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
             params: {
@@ -164,22 +164,28 @@ export default {
     },
   },
   async created() {
-    let stockMap = new Map();
-    this.stockRawData.forEach((item) => {
-      stockMap.set(item[1], item[0]);
+    await axios.get(`./static/stock.json`).then((res) => {
+      this.stockRawData = res.data.items;
+      let stockMap = new Map();
+
+      this.stockRawData.forEach((item) => {
+        stockMap.set(item[1], item[0]);
+      });
+      this.stockMap = stockMap;
     });
-    this.stockMap = stockMap;
+
     let date = this.dateFormat(new Date());
     /* for sending email */
     //this.getCurrentStockPrice(date);
     // send data to each mail of their subscribe info
+    /*
     axios.get(`${baseUrl}/subscription`).then((res) => {
       const subscribeInfo = res.data;
       subscribeInfo.forEach((item) => {
         this.sendCurrentStockPrice(item);
       });
     });
-    console.log(process.env.NODE_ENV);
+    */
   },
 
   methods: {
@@ -196,7 +202,7 @@ export default {
     },
     sendCurrentStockPrice(subscribeInfo) {
       axios
-        .post("/http://api.waditu.com/", {
+        .post(`${corsUrl}/http://api.waditu.com/`, {
           api_name: "daily",
           token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
           params: {
