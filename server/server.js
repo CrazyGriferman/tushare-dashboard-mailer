@@ -1,7 +1,6 @@
 const nodemailer = require("nodemailer");
 //var path = require("path");
 let express = require("express");
-//var webpack = require("webpack");server.js
 const bodyParser = require("body-parser");
 const router = express.Router();
 
@@ -28,22 +27,6 @@ app.use(bodyParser.json()); // support json encoded bodies
 app.use(bodyParser.urlencoded({ extended: false })); // support encoded bodies
 app.use("/", router);
 
-// Listen on a specific host via the HOST environment variable
-const host = process.env.HOST || "localhost";
-// Listen on a specific port via the PORT environment variable
-const port = process.env.PORT || 8086;
-
-var cors_proxy = require("cors-anywhere");
-cors_proxy
-  .createServer({
-    originWhitelist: [], // Allow all origins
-    requireHeader: ["origin", "x-requested-with"],
-    removeHeaders: ["cookie", "cookie2"],
-  })
-  .listen(port, host, function () {
-    console.log("Running CORS Anywhere on " + host + ":" + port);
-  });
-
 // Use Smtp Protocol to send Email
 
 let transporter = nodemailer.createTransport({
@@ -60,15 +43,15 @@ app.listen(8085, function () {
   console.info("复制打开浏览器", "localhost:8085");
 });
 
-app.post("/test", (req, res) => {
+app.post("/post", (req, res) => {
   // const data = req.body.data;
   const data = req.body.data;
-
+  console.log(data);
   let mailOptions = {
     from: "251031557@qq.com", // TODO: email sender
-    to: "251031557@qq.com", // TODO: email receiver
+    to: data.mail, // TODO: email receiver
     subject: `上海机场数据`,
-    text: `${data}`,
+    text: `${data.sendText}`,
   };
 
   transporter.sendMail(mailOptions, (err) => {
@@ -92,21 +75,48 @@ app.get("/subscription", (req, res) => {
 
 app.post("/add", (req, res) => {
   const data = req.body.data;
-  console.log(data);
-
   jsonReader("./stock.json", (err, subscriptionInfo) => {
     if (err) {
       console.log(err);
       return;
     }
-    subscriptionInfo.map((item) => {
-      console.log(item);
-    });
     subscriptionInfo.push(data);
     fs.writeFile("./stock.json", JSON.stringify(subscriptionInfo), (err) => {
       if (err) console.log("Error writing file:", err);
     });
   });
+});
+
+app.post("/delete", (req, res) => {
+  const data = req.body.data;
+  jsonReader("./stock.json", (err, subscriptionInfo) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    subscriptionInfo.forEach((item) => {
+      if (item.stockName == data.stockName && item.mail == data.mail) {
+        const index = subscriptionInfo.indexOf(item);
+        function removeItemWithSlice(items, index) {
+          const firstArr = items.slice(0, index);
+          const secondArr = items.slice(index + 1);
+          return [...firstArr, ...secondArr];
+        }
+        subscriptionInfo = removeItemWithSlice(subscriptionInfo, index);
+      }
+    });
+    fs.writeFile("./stock.json", JSON.stringify(subscriptionInfo), (err) => {
+      if (err) console.log("Error writing file:", err);
+    });
+  });
+});
+
+app.all("*", function (req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Methods", "PUT,GET,POST,DELETE,OPTIONS");
+  res.header("Access-Control-Allow-Headers", "X-Requested-With");
+  res.header("Access-Control-Allow-Headers", "Content-Type");
+  next();
 });
 
 const timeFunc = setInterval(() => {
