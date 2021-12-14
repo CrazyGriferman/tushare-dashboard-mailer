@@ -178,14 +178,13 @@ export default {
     /* for sending email */
     //this.getCurrentStockPrice(date);
     // send data to each mail of their subscribe info
-    /*
+
     axios.get(`${baseUrl}/subscription`).then((res) => {
       const subscribeInfo = res.data;
       subscribeInfo.forEach((item) => {
         this.sendCurrentStockPrice(item);
       });
     });
-    */
   },
 
   methods: {
