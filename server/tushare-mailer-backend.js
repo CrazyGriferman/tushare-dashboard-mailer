@@ -1,5 +1,4 @@
 const nodemailer = require("nodemailer");
-//var path = require("path");
 let express = require("express");
 const bodyParser = require("body-parser");
 const router = express.Router();
@@ -54,25 +53,6 @@ let transporter = nodemailer.createTransport({
 });
 
 // setup e-mail data with unicode symbols
-
-app.post("/post", (req, res) => {
-  // const data = req.body.data;
-  const data = req.body.data;
-  let mailOptions = {
-    from: "251031557@qq.com", // TODO: email sender
-    to: data.mail, // TODO: email receiver
-    subject: `上海机场数据`,
-    text: `${data.sendText}`,
-  };
-
-  transporter.sendMail(mailOptions, (err) => {
-    if (err) {
-      return console.log(err);
-    }
-    res.send("mail send");
-    return console.log("Email sent!!!");
-  });
-});
 
 app.post("/add", (req, res) => {
   const data = req.body.data;
@@ -131,24 +111,26 @@ const sendMail = () => {
       return;
     }
     const hours = new Date().getHours();
-    if (hours != 18) {
+    if (hours == 18) {
       const date = dateFormat(new Date());
       subscriptionInfo.forEach((item) => {
         fetchDailyStockInfo(item.stockNumber, date).then((res) => {
           let currentPrice = res.data.data.items;
-          let mailOptions = {
-            from: "251031557@qq.com", // TODO: email sender
-            to: item.mail, // TODO: email receiver
-            subject: `${item.stockName} 股价提醒`,
-            text: `当前${item.stockName}为${currentPrice} , 已小于您订阅的价格${item.stockPrice}`,
-          };
-          transporter.sendMail(mailOptions, (err) => {
-            if (err) {
-              return console.log(err);
-            }
-            res.send("mail send");
-            return console.log("Email sent!!!");
-          });
+          if (item.stockPrice < currentPrice) {
+            let mailOptions = {
+              from: "251031557@qq.com", // TODO: email sender
+              to: item.mail, // TODO: email receiver
+              subject: `${item.stockName} 股价提醒`,
+              text: `当前${item.stockName}为${currentPrice} , 已小于您订阅的价格${item.stockPrice}`,
+            };
+            transporter.sendMail(mailOptions, (err) => {
+              if (err) {
+                return console.log(err);
+              }
+              res.send("mail send");
+              return console.log("Email sent!!!");
+            });
+          }
         });
       });
     }
@@ -158,5 +140,5 @@ const sendMail = () => {
 /* 3600000 1hour */
 app.listen(8085, function () {
   console.info("复制打开浏览器", "localhost:8085");
-  setInterval(sendMail, 30000);
+  setInterval(sendMail, 3600000);
 });
