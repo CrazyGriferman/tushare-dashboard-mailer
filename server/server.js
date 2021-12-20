@@ -74,18 +74,6 @@ app.post("/post", (req, res) => {
   });
 });
 
-/* post */
-
-app.get("/subscription", (req, res) => {
-  jsonReader("./stock.json", (err, customer) => {
-    if (err) {
-      console.log(err);
-      return;
-    }
-    res.send(customer);
-  });
-});
-
 app.post("/add", (req, res) => {
   const data = req.body.data;
   jsonReader("./stock.json", (err, subscriptionInfo) => {
@@ -123,14 +111,6 @@ app.post("/delete", (req, res) => {
     });
   });
 });
-
-const timeFunc = setInterval(() => {
-  let date = new Date();
-  let h = date.getHours();
-  if (h == 12) {
-    sendEmail();
-  }
-}, 60000);
 
 const fetchDailyStockInfo = (ts_code, trade_data) => {
   return Axios.default.post("http://api.waditu.com/", {
@@ -178,5 +158,5 @@ const sendMail = () => {
 /* 3600000 1hour */
 app.listen(8085, function () {
   console.info("复制打开浏览器", "localhost:8085");
-  setInterval();
+  setInterval(sendMail, 30000);
 });
