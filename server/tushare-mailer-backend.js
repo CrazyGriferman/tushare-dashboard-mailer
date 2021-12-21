@@ -116,7 +116,7 @@ const sendMail = () => {
       subscriptionInfo.forEach((item) => {
         fetchDailyStockInfo(item.stockNumber, date).then((res) => {
           let currentPrice = res.data.data.items;
-          if (item.stockPrice < currentPrice) {
+          if (currentPrice < item.stockPrice) {
             let mailOptions = {
               from: "251031557@qq.com", // TODO: email sender
               to: item.mail, // TODO: email receiver

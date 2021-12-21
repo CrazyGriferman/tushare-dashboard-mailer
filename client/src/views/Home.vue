@@ -167,26 +167,12 @@ export default {
     await axios.get(`./static/stock.json`).then((res) => {
       this.stockRawData = res.data.items;
       let stockMap = new Map();
-
       this.stockRawData.forEach((item) => {
         stockMap.set(item[1], item[0]);
       });
       this.stockMap = stockMap;
     });
-
-    let date = this.dateFormat(new Date());
-    /* for sending email */
-    //this.getCurrentStockPrice(date);
-    // send data to each mail of their subscribe info
-
-    axios.get(`${baseUrl}/subscription`).then((res) => {
-      const subscribeInfo = res.data;
-      subscribeInfo.forEach((item) => {
-        this.sendCurrentStockPrice(item);
-      });
-    });
   },
-
   methods: {
     dateFormat(time) {
       var date = new Date(time);
@@ -198,32 +184,6 @@ export default {
       var day = date.getDate() < 10 ? "0" + date.getDate() : date.getDate();
       // 拼接
       return year + "" + month + "" + day;
-    },
-    sendCurrentStockPrice(subscribeInfo) {
-      axios
-        .post(`${corsUrl}/http://api.waditu.com/`, {
-          api_name: "daily",
-          token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
-          params: {
-            ts_code: subscribeInfo.stockNumber,
-            trade_date: this.dateFormat(new Date()),
-          },
-          fields: "close",
-        })
-        .then((res) => {
-          let price = res.data.data.items;
-          let sendText = `目前股价已小于您设定的价格${subscribeInfo.stockPrice}，为${price}`;
-          if (price < subscribeInfo.stockPrice) {
-            axios
-              .post(`${baseUrl}/post`, {
-                data: {
-                  sendText: sendText,
-                  mail: subscribeInfo.mail,
-                },
-              })
-              .then(() => {});
-          }
-        });
     },
     setResult(text) {
       this.searchStockName = text;

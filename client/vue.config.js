@@ -1,12 +1,12 @@
 module.exports = {
-  // devtool: 'none',
-  /* 
+  //devtool: 'none',
+
   devServer: {
     proxy: {
       "/": {
-        target: "http://cors.crazygriferman.com",
+        target: "http://localhost:8085",
         changeOrigin: true,
       },
-    }, 
-  },*/
+    },
+  },
 };
