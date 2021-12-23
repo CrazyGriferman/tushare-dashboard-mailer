@@ -159,7 +159,6 @@ export default {
     searchStockName: {
       handler(newSearchStockName, oldSearchStockName) {
         this.search(newSearchStockName, this.results);
-        console.log(1);
       },
     },
   },
@@ -203,7 +202,6 @@ export default {
       console.log(1);
     },
     subscribeSubmit(choice) {
-      this.$refs.subscribe_form.reset();
       if (choice == "subscribe") {
         axios
           .post(`${baseUrl}/add`, {
@@ -229,7 +227,12 @@ export default {
             },
           })
           .then((res) => {});
+        this.subscriber.stockNumber = "";
+        this.subscriber.stockName = "";
+        this.subscriber.stockPrice = "";
+        this.subscriber.mail = "";
       }
+      this.$refs.subscribe_form.reset();
     },
     searchSubmit(stockName) {
       this.chartTitleName = stockName;
@@ -247,15 +250,15 @@ export default {
 <style scoped>
 #stationChart {
   position: absolute;
-  bottom: 5%;
-  left: 7%;
+  bottom: 3%;
+  left: 10%;
 }
 
 #subscribe {
   display: flex;
   flex-direction: column;
   position: absolute;
-  top: 6%;
+  top: 0%;
   left: 5%;
 }
 
@@ -286,7 +289,7 @@ export default {
   flex-direction: column;
   position: absolute;
   right: 5%;
-  top: 6%;
+  top: 0%;
 }
 
 #search input {

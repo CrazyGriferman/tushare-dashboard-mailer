@@ -1,6 +1,5 @@
 module.exports = {
   //devtool: 'none',
-
   devServer: {
     proxy: {
       "/": {

@@ -4,7 +4,7 @@ import router from "./router";
 
 import axios from "axios";
 Vue.prototype.$axios = axios;
-//axios.defaults.baseURL = ""; //critical code
+axios.defaults.baseURL = ""; //critical code
 Vue.config.productionTip = false;
 
 Vue.config.productionTip = false;
