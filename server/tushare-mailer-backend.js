@@ -53,6 +53,18 @@ let transporter = nodemailer.createTransport({
 });
 
 // setup e-mail data with unicode symbols
+/*
+app.get("/rawStock", (req, res) => {
+  Axios.default.get("./stockRawData.json").then((res) => {
+    let stockRawData = res.data;
+    let stockMap = new Map();
+      stockRawData.forEach((item) => {
+        stockMap.set(item[1], item[0]);
+      });
+      res.send(stockRawData);
+  })
+})
+*/
 
 app.post("/add", (req, res) => {
   const data = req.body.data;
