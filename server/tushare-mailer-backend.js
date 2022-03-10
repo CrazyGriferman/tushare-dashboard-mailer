@@ -1,5 +1,8 @@
+// required to create a config file to add stockApi / mailAccount / mailPassWord
+const config = require("./config/config");
+
 const nodemailer = require("nodemailer");
-let express = require("express");
+const express = require("express");
 const bodyParser = require("body-parser");
 const router = express.Router();
 const Axios = require("axios");
@@ -19,7 +22,6 @@ const dateFormat = (time) => {
 
 // file module
 const fs = require("fs");
-const { default: axios } = require("axios");
 
 function jsonReader(filePath, cb) {
   fs.readFile(filePath, (err, fileData) => {
@@ -46,25 +48,12 @@ app.use("/", router);
 let transporter = nodemailer.createTransport({
   service: "QQ",
   auth: {
-    user: "251031557@qq.com", // TODO: your gmail account
-    pass: "domvadrtufwibhae", // TODO: your gmail password
+    // add your own mail account and password
+    user: config.mailUserName,
+    pass: config.mailPassWord,
     // domvadrtufwibhae opcatfmlkmhebhca
   },
 });
-
-// setup e-mail data with unicode symbols
-/*
-app.get("/rawStock", (req, res) => {
-  Axios.default.get("./stockRawData.json").then((res) => {
-    let stockRawData = res.data;
-    let stockMap = new Map();
-      stockRawData.forEach((item) => {
-        stockMap.set(item[1], item[0]);
-      });
-      res.send(stockRawData);
-  })
-})
-*/
 
 app.post("/add", (req, res) => {
   const data = req.body.data;
@@ -107,7 +96,8 @@ app.post("/delete", (req, res) => {
 const fetchDailyStockInfo = (ts_code, trade_data) => {
   return Axios.default.post("http://api.waditu.com/", {
     api_name: "daily",
-    token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
+    // add your own token
+    token: config.tushareToken,
     params: {
       ts_code: ts_code,
       trade_date: trade_data,
@@ -119,7 +109,6 @@ const fetchDailyStockInfo = (ts_code, trade_data) => {
 const sendMail = () => {
   jsonReader("./stock.json", (err, subscriptionInfo) => {
     if (err) {
-      console.log(err);
       return;
     }
     const hours = new Date().getHours();
@@ -128,9 +117,9 @@ const sendMail = () => {
       subscriptionInfo.forEach((item) => {
         fetchDailyStockInfo(item.stockNumber, date).then((res) => {
           let currentPrice = res.data.data.items;
-          if (currentPrice < item.stockPrice) {
+          if (current && currentPrice < item.stockPrice) {
             let mailOptions = {
-              from: "251031557@qq.com", // TODO: email sender
+              from: config.mailUserName, // TODO: email sender
               to: item.mail, // TODO: email receiver
               subject: `${item.stockName} 股价提醒`,
               text: `当前${item.stockName}为${currentPrice} , 已小于您订阅的价格${item.stockPrice}`,
