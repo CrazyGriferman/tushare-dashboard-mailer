@@ -1,8 +1,6 @@
-[proxychains] DLL init: proxychains-ng 4.14 [proxychains] DLL init:
-proxychains-ng 4.14
 <template>
   <div id="stock">
-    <city-the-chart
+    <stock-the-chart
       @clickStation="changeInfo"
       v-if="isChartRender"
       :chartOption="chartOption"
@@ -74,14 +72,15 @@ proxychains-ng 4.14
 <script>
 import axios from "axios";
 import { getChartOption } from "../utils/GetChartOption";
-import CityTheChart from "../components/CityTheChart";
-import baseUrl from "../api/baseUrl";
-import corsUrl from "../api/corsUrl";
+import StockTheChart from "../components/StockTheChart";
+import baseUrl from "../config/baseUrl";
+import corsUrl from "../config/corsUrl";
+import { tushareToken } from "../config/token";
 
 export default {
   name: "Home",
   components: {
-    CityTheChart,
+    StockTheChart,
   },
   props: {
     msg: String,
@@ -127,7 +126,7 @@ export default {
         axios
           .post(`${corsUrl}/http://api.waditu.com/`, {
             api_name: "daily",
-            token: "f65ba28a7e38e1aa626a720bfa27a7ce1a2d8b14216ad2fc1f44946d",
+            token: tushareToken,
             params: {
               ts_code: newPostData.ts_code,
               start_date: newPostData.start_date,
@@ -198,6 +197,7 @@ export default {
         });
       }
     },
+    // click chart method
     changeInfo() {
       console.log(1);
     },
@@ -248,7 +248,7 @@ export default {
 </script>
 
 <style scoped>
-#stationChart {
+#stockChart {
   position: absolute;
   bottom: 3%;
   left: 10%;

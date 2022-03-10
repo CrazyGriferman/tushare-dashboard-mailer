@@ -1,7 +1,7 @@
 <template>
   <form id="baseFrom" action="">
     <input type="text" placeholder="请填入股票代码" />
-    <input type="text" placeholder="填入抄底价格" />
+    <input type="text" placeholder="填入价格" />
     <input type="text" placeholder="请填入订阅密钥" />
     <button type="submit">订阅</button>
   </form>

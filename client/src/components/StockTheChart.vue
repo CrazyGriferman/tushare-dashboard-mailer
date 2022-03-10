@@ -2,7 +2,7 @@
 import * as echarts from "echarts";
 import BaseContainer from "../features/BaseContainer.vue";
 export default {
-  name: "CityTheChart",
+  name: "StockTheChart",
   components: { BaseContainer },
   props: ["chartOption", "postData", "chartTitleName"],
   mounted() {
@@ -20,7 +20,7 @@ export default {
 
 <template>
   <base-container
-    id="stationChart"
+    id="stockChart"
     :ititle="`${this.chartTitleName}日线 ${this.postData.start_date} 至 ${this.postData.end_date}`"
     iwidth="80"
     iheight="70"
