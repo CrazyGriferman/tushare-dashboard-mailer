@@ -139,8 +139,10 @@ export default {
             this.chartSetting["xDate"] = [];
             this.chartSetting["stockPrice"] = [];
             this.data.forEach((item) => {
-              this.chartSetting["xDate"].push(item[0]);
-              this.chartSetting["stockPrice"].push(item[1]);
+              let date = item[0];
+              let stockPrice = item[1];
+              this.chartSetting["xDate"].push(date);
+              this.chartSetting["stockPrice"].push(stockPrice);
             });
             this.chartSetting["stockPrice"] =
               this.chartSetting["stockPrice"].reverse();
