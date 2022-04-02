@@ -1,1 +1,20 @@
-[{"stockNumber":"603444.SH","stockName":"吉比特","stockPrice":"","mail":""},{"stockNumber":"603444.SH","stockName":"吉比特","stockPrice":"12","mail":""},{"stockNumber":"603444.SH","stockName":"吉比特","stockPrice":"32","mail":"251031557@qq.com"}]
+[
+  {
+    "stockNumber": "603444.SH",
+    "stockName": "吉比特",
+    "stockPrice": "",
+    "mail": ""
+  },
+  {
+    "stockNumber": "603444.SH",
+    "stockName": "吉比特",
+    "stockPrice": "12",
+    "mail": ""
+  },
+  {
+    "stockNumber": "603444.SH",
+    "stockName": "吉比特",
+    "stockPrice": "32",
+    "mail": "251031557@qq.com"
+  }
+]

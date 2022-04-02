@@ -115,9 +115,15 @@ const sendMail = () => {
     if (hours == 18) {
       const date = dateFormat(new Date());
       subscriptionInfo.forEach((item) => {
+        /* 首先遍历每个订阅信息，对于每个订阅信息，它是一个对象，
+         调用函数fetchDailyStockInfo获取股票收盘价格，将该收盘价格与用户订阅的价格相对比
+         这里有个细节就是假如当天闭市的话，通过api获取的价格为undefined，因而在对比的需要先判断currentPrice是否被定义
+         ，不然就会发过来空价格的邮件
+        */
         fetchDailyStockInfo(item.stockNumber, date).then((res) => {
           let currentPrice = res.data.data.items;
-          if (current && currentPrice < item.stockPrice) {
+          // need to check the length of currentPrice(an array)
+          if (currentPrice.length != 0 && currentPrice < item.stockPrice) {
             let mailOptions = {
               from: config.mailUserName, // TODO: email sender
               to: item.mail, // TODO: email receiver
